@@ -11,7 +11,8 @@ const CONFIG_FILE = "config.json";
 // Fayldan o‘qish
 function readJson(file, defaultValue) {
   try {
-    return JSON.parse(fs.readFileSync(file, "utf8"));
+    const data = fs.readFileSync(file, "utf8");
+    return JSON.parse(data);
   } catch {
     return defaultValue;
   }
@@ -49,7 +50,7 @@ bot.start((ctx) => {
   }
 
   ctx.reply(
-    `👋 Salom, ${name}!\n\nopen budgetga ovoz berish uchun\n\nQuyidagi tugmalardan foydalaning 👇`,
+    `👋 Salom, ${name}!\n\nOpen Budgetga ovoz berish uchun\nQuyidagi tugmalardan foydalaning 👇`,
     Markup.keyboard([
       ["🗳 Ovoz berish"],
       ["📊 Hisobim"],
@@ -94,7 +95,8 @@ bot.hears("📞 Murojat", (ctx) => {
 // 📖 Qo‘llanma tugmasi
 bot.hears("📖 Qo‘llanma", (ctx) => {
   ctx.reply(
-    "📖 Qo‘llanma:\n\n1. '🗳 Ovoz berish' tugmasini bosing va link orqali ovoz bering.\n" +
+    "📖 Qo‘llanma:\n\n" +
+    "1. '🗳 Ovoz berish' tugmasini bosing va link orqali ovoz bering.\n" +
     "2. '📊 Hisobim' tugmasida umumiy hisobni ko‘rishingiz mumkin.\n" +
     "3. '📞 Murojat' tugmasi orqali admin bilan bog‘lanishingiz mumkin."
   );
@@ -129,7 +131,7 @@ bot.on("text", (ctx) => {
     const step = secretChangeSessions.get(userId);
 
     if (step.stage === "old") {
-      if (text === config.ADMIN_SECRET) {
+      if (text.trim() === config.ADMIN_SECRET.trim()) {
         secretChangeSessions.set(userId, { stage: "new" });
         ctx.reply("✍️ Yangi maxfiy so‘zni kiriting:");
       } else {
@@ -140,14 +142,14 @@ bot.on("text", (ctx) => {
     }
 
     if (step.stage === "new") {
-      secretChangeSessions.set(userId, { stage: "confirm", newSecret: text });
+      secretChangeSessions.set(userId, { stage: "confirm", newSecret: text.trim() });
       ctx.reply("✅ Yangi maxfiy so‘zni tasdiqlash uchun qayta yozing:");
       return;
     }
 
     if (step.stage === "confirm") {
-      if (text === step.newSecret) {
-        config.ADMIN_SECRET = text;
+      if (text.trim() === step.newSecret) {
+        config.ADMIN_SECRET = text.trim();
         writeJson(CONFIG_FILE, config);
         ctx.reply("🎉 Maxfiy so‘z muvaffaqiyatli o‘zgartirildi!");
       } else {
@@ -159,7 +161,7 @@ bot.on("text", (ctx) => {
   }
 
   // Agar maxfiy so‘zni kiritayotgan bo‘lsa
-  if (text === config.ADMIN_SECRET) {
+  if (text.trim() === config.ADMIN_SECRET.trim()) {
     adminSessions.add(userId);
     ctx.reply("✅ Admin rejimiga muvaffaqiyatli kirdingiz!", adminMenu());
     return;
