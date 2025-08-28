@@ -2,7 +2,7 @@ const { Telegraf, Markup } = require("telegraf");
 const fs = require("fs");
 
 // Bot tokeningiz
-const bot = new Telegraf("BOT_TOKEN");
+const bot = new Telegraf("8003713738:AAEbxOwYzkhdIROGeDziAkqAQbVCoFf06ME");
 
 // JSON fayllar
 const USERS_FILE = "users.json";
